@@ -4,9 +4,11 @@ const cors = require('cors'); //to allow the frontend to communicate with backen
 const bcrypt = require('bcryptjs');
 const session = require('express-session');
 require('dotenv').config();
+const path = require('path');
+const uploadRoute = require('./routes/uploadRoute'); 
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;  //backend run on 5000 port
 
 //Middleware
 app.use(cors({
@@ -23,6 +25,10 @@ app.use(session({
     httpOnly: true
   }
 }));
+
+//
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 // MySQL Connection
 const db = mysql.createConnection({
@@ -150,4 +156,14 @@ app.delete('/api/posts/:id', (req, res) => {
   });
 });
 
+
+// Serve static files from uploads folder
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Use the upload route
+app.use(uploadRoute);
+
+
 app.listen(PORT, () => console.log(`Server running on port : ${PORT}`));
+
+
